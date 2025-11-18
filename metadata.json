@@ -1,0 +1,5 @@
+{
+  "name": "Okul Yaşı Hesaplama",
+  "description": "Çocuğun doğum tarihine göre ilkokul çağında olup olmadığını kontrol eden basit bir web uygulaması. Uygulama, çocuğun yaşını hesaplar ve uygunluğunu belirler.",
+  "requestFramePermissions": []
+}

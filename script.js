@@ -1,0 +1,167 @@
+// --- DOM Elements ---
+const dayInput = document.getElementById('day');
+const monthSelect = document.getElementById('month');
+const yearInput = document.getElementById('year');
+const checkButton = document.getElementById('check-button');
+const errorMessage = document.getElementById('error-message');
+const infoContainer = document.getElementById('info-container');
+const infoText = document.getElementById('info-text');
+const footerYear = document.getElementById('footer-year');
+
+// --- Constants and State ---
+const icons = {
+    checkCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+    xCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+    exclamationTriangle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`,
+};
+
+const statusConfig = {
+  compulsory: { bgColor: 'bg-green-50', borderColor: 'border-green-500', textColor: 'text-green-800', icon: icons.checkCircle, title: 'Kayıt Zorunlu' },
+  optional: { bgColor: 'bg-yellow-50', borderColor: 'border-yellow-500', textColor: 'text-yellow-800', icon: icons.exclamationTriangle, title: 'İsteğe Bağlı Kayıt' },
+  ineligible: { bgColor: 'bg-red-50', borderColor: 'border-red-500', textColor: 'text-red-800', icon: icons.xCircle, title: 'Kayıt İçin Uygun Değil' },
+};
+
+// --- Initialization ---
+function initialize() {
+    // Set cutoff date info
+    const todayForCutoff = new Date();
+    let cutoffYear = todayForCutoff.getFullYear();
+    if (todayForCutoff.getMonth() >= 8) { // 8 is September
+        cutoffYear++;
+    }
+    infoText.innerHTML = `Milli Eğitim Bakanlığı'nın yönetmeliğine göre, ilkokul kayıtları için <strong>30 Eylül ${cutoffYear}</strong> tarihi baz alınarak hesaplama yapılmaktadır. Bu tarihe göre yaş aralıkları şöyledir:`;
+    
+    // Set footer year
+    footerYear.textContent = new Date().getFullYear();
+
+    // Add event listener
+    checkButton.addEventListener('click', () => handleCheckEligibility(cutoffYear));
+}
+
+// --- Core Logic ---
+const calculateAgeInMonths = (birthDate, cutoffDate) => {
+    let years = cutoffDate.getFullYear() - birthDate.getFullYear();
+    let months = cutoffDate.getMonth() - birthDate.getMonth();
+    
+    if (cutoffDate.getDate() < birthDate.getDate()) {
+        months--;
+    }
+    
+    let totalMonths = years * 12 + months;
+    
+    return totalMonths < 0 ? 0 : totalMonths;
+};
+
+function renderResult(result, cutoffYear) {
+    const config = statusConfig[result.status];
+
+    // Update container classes for color.
+    infoContainer.className = `p-4 border-l-4 mb-6 ${config.borderColor} ${config.bgColor}`;
+    
+    // Create new content for the info box
+    const resultHTML = `
+        <div class="flex items-center">
+            <div class="flex-shrink-0">${config.icon}</div>
+            <div class="ml-4 flex-grow">
+                <p class="text-lg font-bold ${config.textColor}">${config.title}</p>
+                <p class="text-sm text-gray-800 mt-1">
+                    Çocuğun yaşı (30 Eylül ${cutoffYear} itibarıyla): <strong>${result.ageInYears} yaş ${result.ageInMonths % 12} ay</strong>
+                </p>
+                <p class="text-sm text-gray-600 mt-2">${result.message}</p>
+            </div>
+        </div>
+    `;
+
+    // Replace the content
+    infoContainer.innerHTML = resultHTML;
+}
+
+function handleCheckEligibility(cutoffYear) {
+    // Clear previous errors
+    errorMessage.textContent = '';
+    
+    const day = dayInput.value.trim();
+    const month = monthSelect.value;
+    const year = yearInput.value.trim();
+
+    // 1. Check for empty fields
+    if (!day || !month || !year) {
+        errorMessage.textContent = 'Lütfen doğum tarihinin tüm alanlarını (Gün, Ay, Yıl) doldurun.';
+        return;
+    }
+
+    const dayNum = parseInt(day, 10);
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt(year, 10);
+
+    // 2. Check if inputs are numbers
+    if (isNaN(dayNum) || isNaN(yearNum)) {
+        errorMessage.textContent = 'Gün ve Yıl alanlarına lütfen sadece sayısal değerler girin.';
+        return;
+    }
+
+    // 3. Check for valid year range
+    const currentYear = new Date().getFullYear();
+    if (yearNum < 1950 || yearNum > currentYear + 1) {
+        errorMessage.textContent = `Lütfen geçerli bir doğum yılı girin (${1950} - ${currentYear + 1}).`;
+        return;
+    }
+
+    // 4. Check for valid day range
+    if (dayNum < 1 || dayNum > 31) {
+        errorMessage.textContent = 'Gün 1 ile 31 arasında bir değer olmalıdır.';
+        return;
+    }
+
+    // 5. Check for valid composite date (e.g., Feb 30)
+    const birthDateObj = new Date(yearNum, monthNum - 1, dayNum);
+    if (birthDateObj.getFullYear() !== yearNum || birthDateObj.getMonth() !== monthNum - 1 || birthDateObj.getDate() !== dayNum) {
+        errorMessage.textContent = `Geçersiz tarih. Girdiğiniz gün (${dayNum}), seçtiğiniz ay için uygun değil. Lütfen kontrol edin.`;
+        return;
+    }
+    
+    // 6. Check if date is in the future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (birthDateObj > today) {
+        errorMessage.textContent = 'Doğum tarihi bugünden sonraki bir tarih olamaz.';
+        return;
+    }
+
+    // All validations passed, proceed with calculation
+    const cutoffDate = new Date(cutoffYear, 8, 30); // 8 is September
+    const ageInMonths = calculateAgeInMonths(birthDateObj, cutoffDate);
+    const ageInYears = Math.floor(ageInMonths / 12);
+
+    let status = 'ineligible';
+    let message = '';
+
+    if (ageInYears >= 14) {
+        status = 'ineligible';
+        message = 'İlköğretim çağı (6-14 yaş) dışına çıkılmıştır. Bu durumdaki bireyler için Açık Öğretim İlkokulu veya Halk Eğitim Merkezleri gibi yetişkin eğitimi programları değerlendirilmelidir.';
+    } else if (ageInMonths >= 72) {
+        status = 'compulsory';
+        message = 'Çocuğunuzun ilkokula kaydı zorunludur.';
+    } else if (ageInMonths >= 69 && ageInMonths <= 71) {
+        status = 'optional';
+        message = 'Çocuğunuzun kaydı, veli dilekçesi ile bir yıl ertelenebilir veya isteğe bağlı olarak anaokuluna yönlendirilebilir.';
+    } else if (ageInMonths >= 66 && ageInMonths <= 68) {
+        status = 'optional';
+        message = 'Çocuğunuzun kaydı, veli dilekçesi ile ilkokula bir yıl erken başlatılabilir.';
+    } else {
+        status = 'ineligible';
+        message = 'Çocuğunuz henüz ilkokul kayıt yaşına ulaşmamıştır.';
+    }
+
+    const result = {
+        ageInMonths,
+        ageInYears,
+        status,
+        message,
+    };
+    
+    renderResult(result, cutoffYear);
+}
+
+// --- Run ---
+initialize();
