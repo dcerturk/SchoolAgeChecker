@@ -1,115 +1,128 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>İlkokul Kayıt Yaşı Hesaplama</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Mobil cihazlarda dikey kaydırmayı önlemek için ana kapsayıcıyı sabitler */
-        body, html { height: 100%; overflow: hidden; }
+        /* iOS ve mobil tarayıcılarda aşırı kaydırmayı ve lastik efektini önler */
+        body, html { height: 100%; overflow: hidden; overscroll-behavior: none; }
     </style>
   </head>
-  <body class="bg-gray-100 text-gray-800 h-screen flex flex-col justify-center items-center overflow-hidden">
+  <body class="bg-gray-100 text-gray-800 h-full w-full flex flex-col items-center justify-start overflow-hidden sm:p-4">
     
-    <div class="w-full max-w-2xl px-4 flex flex-col max-h-screen overflow-y-auto">
-        <main class="bg-white p-4 md:p-6 rounded-xl shadow-lg w-full">
-            <header class="flex items-center justify-between mb-4 border-b pb-2">
-                <div>
-                    <h1 class="text-lg md:text-2xl font-bold text-gray-800 leading-tight">İlkokul Kayıt<br>Yaşı Hesaplama</h1>
-                    <p class="text-xs text-gray-500 mt-1 hidden md:block">MEB yönetmeliğine uygun hesaplama aracı.</p>
-                </div>
-                <div class="flex-shrink-0 ml-2">
-                    <!-- Görsel boyutu h-24'ten h-12/h-16'ya düşürüldü -->
-                    <img src="https://www.meb.gov.tr/assets/img/ataturk.png" alt="MEB Logo" class="h-12 md:h-16 object-contain" />
-                </div>
-            </header>
-
-            <!-- Info container padding ve text boyutları küçültüldü -->
-            <div id="info-container" class="p-3 border-l-4 border-blue-500 bg-blue-50 mb-4 rounded-r-md transition-all duration-300">
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 mt-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="ml-2">
-                        <p id="info-text" class="text-xs md:text-sm text-blue-800 leading-snug">
-                            <!-- Dynamic content will be injected here -->
-                        </p>
-                        <!-- 'hidden md:block' kaldırılarak mobilde de görünür yapıldı -->
-                        <ul class="list-disc list-inside text-xs text-blue-700 mt-1 space-y-0.5 block">
-                            <li><strong>72+ ay:</strong> Zorunlu</li>
-                            <li><strong>69-71 ay:</strong> Ertelenebilir</li>
-                            <li><strong>66-68 ay:</strong> İsteğe bağlı erken</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form inputları daha sıkışık hale getirildi -->
-            <div class="grid grid-cols-3 gap-2 md:gap-4 mb-1">
-                <div class="col-span-1">
-                    <label for="day" class="block text-xs font-medium text-gray-700 mb-1">Gün</label>
-                    <input
-                        type="number"
-                        id="day"
-                        class="block w-full px-2 py-1.5 bg-gray-50 border border-gray-300 rounded text-sm focus:ring-indigo-500 focus:border-indigo-500 text-center"
-                        placeholder="GG"
-                        min="1"
-                        max="31"
-                    />
-                </div>
-                <div class="col-span-1">
-                    <label for="month" class="block text-xs font-medium text-gray-700 mb-1">Ay</label>
-                    <select
-                        id="month"
-                        class="block w-full px-2 py-1.5 bg-gray-50 border border-gray-300 rounded text-sm focus:ring-indigo-500 focus:border-indigo-500"
-                    >
-                        <option value="" disabled selected>Ay</option>
-                        <option value="1">Ocak</option>
-                        <option value="2">Şubat</option>
-                        <option value="3">Mart</option>
-                        <option value="4">Nisan</option>
-                        <option value="5">Mayıs</option>
-                        <option value="6">Haziran</option>
-                        <option value="7">Temmuz</option>
-                        <option value="8">Ağustos</option>
-                        <option value="9">Eylül</option>
-                        <option value="10">Ekim</option>
-                        <option value="11">Kasım</option>
-                        <option value="12">Aralık</option>
-                    </select>
-                </div>
-                <div class="col-span-1">
-                    <label for="year" class="block text-xs font-medium text-gray-700 mb-1">Yıl</label>
-                    <input
-                        type="number"
-                        id="year"
-                        class="block w-full px-2 py-1.5 bg-gray-50 border border-gray-300 rounded text-sm focus:ring-indigo-500 focus:border-indigo-500 text-center"
-                        placeholder="YYYY"
-                    />
-                </div>
-            </div>
-
-            <p id="error-message" class="h-4 text-xs text-red-600 mt-1 mb-1 text-center font-medium"></p>
-
-            <button
-                id="check-button"
-                class="w-full bg-indigo-600 text-white py-2 px-4 rounded shadow hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors text-sm md:text-base font-semibold tracking-wide"
-            >
-                HESAPLA
-            </button>
-        </main>
+    <!-- Ana Kapsayıcı: Mobilde tam ekran, masaüstünde sınırlandırılmış ve ortalanmış -->
+    <div class="w-full h-full max-w-3xl flex flex-col transition-all duration-300">
         
-        <footer class="w-full text-center py-2 mt-2 text-gray-500 text-[10px] md:text-xs">
-            <p>&copy; <span id="footer-year"></span> Tüm hakları saklıdır. Çağatay ERTÜRK</p>
-            <div class="flex justify-center space-x-3 mt-1">
-                <a href="https://x.com/dcerturk" target="_blank" class="hover:text-indigo-600">X: @dcerturk</a>
-                <span>•</span>
-                <a href="https://youtube.com/@cagatayerturk" target="_blank" class="hover:text-indigo-600">YouTube</a>
+        <!-- Beyaz Kart: Ekranı dolduracak şekilde esner, ASLA kaydırma çubuğu çıkarmaz (overflow-hidden) -->
+        <main class="bg-white w-full flex-1 flex flex-col justify-between sm:rounded-2xl shadow-xl overflow-hidden relative">
+            
+            <!-- Üst Kısım: Başlık ve Bilgi -->
+            <div class="p-4 md:p-8 pb-1 flex-shrink-0">
+                <header class="flex items-center justify-between mb-2 md:mb-4 border-b border-gray-100 pb-2">
+                    <div>
+                        <h1 class="text-lg md:text-3xl font-bold text-gray-900 leading-tight tracking-tight">İlkokul Kayıt<br>Yaşı Hesaplama</h1>
+                        <p class="text-xs md:text-sm text-gray-500 mt-0.5">MEB yönetmeliğine uygun.</p>
+                    </div>
+                    <div class="flex-shrink-0 ml-3">
+                        <!-- Görsel küçültüldü: h-10 (mobilde 40px) -->
+                        <img src="https://www.meb.gov.tr/assets/img/ataturk.png" alt="MEB Logo" class="h-10 md:h-16 object-contain opacity-90" />
+                    </div>
+                </header>
+
+                <!-- Info Container: Sonuç burada görünür -->
+                <div id="info-container" class="p-3 md:p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg shadow-sm transition-all duration-300 min-h-[100px] md:min-h-[110px] flex flex-col justify-center">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3 w-full">
+                            <p id="info-text" class="text-sm md:text-base text-blue-900 font-medium leading-snug">
+                                <!-- Dynamic content injected here -->
+                            </p>
+                            <ul class="list-disc list-inside text-xs md:text-sm text-blue-800 mt-1.5 space-y-0.5 font-medium block">
+                                <li><strong>72+ ay:</strong> Zorunlu</li>
+                                <li><strong>69-71 ay:</strong> Ertelenebilir</li>
+                                <li><strong>66-68 ay:</strong> İsteğe bağlı erken</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </footer>
+
+            <!-- Orta Kısım: Form (Esnek alan) -->
+            <div class="px-4 md:px-8 flex flex-col justify-center flex-grow">
+                <!-- Hata Mesajı -->
+                <p id="error-message" class="h-5 md:h-6 text-xs md:text-sm text-red-600 text-center font-semibold transition-opacity duration-200 mb-1"></p>
+
+                <!-- Input Grid -->
+                <div class="grid grid-cols-3 gap-2 md:gap-6">
+                    <div class="col-span-1">
+                        <label for="day" class="block text-xs md:text-sm font-semibold text-gray-600 mb-1 uppercase tracking-wide text-center">Gün</label>
+                        <input
+                            type="number"
+                            id="day"
+                            class="block w-full h-11 md:h-14 text-lg md:text-xl text-center bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow shadow-sm"
+                            placeholder="GG"
+                            inputmode="numeric"
+                        />
+                    </div>
+                    <div class="col-span-1">
+                        <label for="month" class="block text-xs md:text-sm font-semibold text-gray-600 mb-1 uppercase tracking-wide text-center">Ay</label>
+                        <select
+                            id="month"
+                            class="block w-full h-11 md:h-14 text-sm md:text-base pl-1 md:pl-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow shadow-sm appearance-none"
+                        >
+                            <option value="" disabled selected>Seçiniz</option>
+                            <option value="1">Ocak</option>
+                            <option value="2">Şubat</option>
+                            <option value="3">Mart</option>
+                            <option value="4">Nisan</option>
+                            <option value="5">Mayıs</option>
+                            <option value="6">Haziran</option>
+                            <option value="7">Temmuz</option>
+                            <option value="8">Ağustos</option>
+                            <option value="9">Eylül</option>
+                            <option value="10">Ekim</option>
+                            <option value="11">Kasım</option>
+                            <option value="12">Aralık</option>
+                        </select>
+                    </div>
+                    <div class="col-span-1">
+                        <label for="year" class="block text-xs md:text-sm font-semibold text-gray-600 mb-1 uppercase tracking-wide text-center">Yıl</label>
+                        <input
+                            type="number"
+                            id="year"
+                            class="block w-full h-11 md:h-14 text-lg md:text-xl text-center bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow shadow-sm"
+                            placeholder="YYYY"
+                            inputmode="numeric"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Kısım: Buton ve Footer -->
+            <div class="p-4 md:p-8 pt-2 flex-shrink-0">
+                <button
+                    id="check-button"
+                    class="w-full h-12 md:h-16 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-lg md:text-xl font-bold rounded-xl shadow-lg hover:shadow-xl transform active:scale-[0.98] transition-all duration-200 flex items-center justify-center tracking-wide"
+                >
+                    HESAPLA
+                </button>
+                
+                <footer class="w-full text-center mt-3 md:mt-6 text-gray-400 text-[10px] md:text-sm">
+                    <p>&copy; <span id="footer-year"></span> Çağatay ERTÜRK</p>
+                    <div class="flex justify-center space-x-4 mt-1 md:mt-2">
+                        <a href="https://x.com/dcerturk" target="_blank" class="hover:text-indigo-600 transition-colors font-medium">X: @dcerturk</a>
+                        <span class="text-gray-300">•</span>
+                        <a href="https://youtube.com/@cagatayerturk" target="_blank" class="hover:text-indigo-600 transition-colors font-medium">YouTube</a>
+                    </div>
+                </footer>
+            </div>
+        </main>
     </div>
 
     <script>
@@ -125,9 +138,9 @@
 
         // --- Constants and State ---
         const icons = {
-            checkCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-            xCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-            exclamationTriangle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`,
+            checkCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+            xCircle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+            exclamationTriangle: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`,
         };
 
         const statusConfig = {
@@ -140,7 +153,9 @@
         function initialize() {
             const todayForCutoff = new Date();
             let cutoffYear = todayForCutoff.getFullYear();
-            if (todayForCutoff.getMonth() >= 8) { // 8 is September
+            // 8 represents September (0-indexed).
+            // If current month is September or later, calculate for NEXT year's enrollment (e.g. in Oct 2025, calc for Sept 2026).
+            if (todayForCutoff.getMonth() >= 8) { 
                 cutoffYear++;
             }
             
@@ -167,24 +182,23 @@
             }
             
             let totalMonths = years * 12 + months;
-            
             return totalMonths < 0 ? 0 : totalMonths;
         };
 
         function renderResult(result, cutoffYear) {
             const config = statusConfig[result.status];
 
-            infoContainer.className = `p-3 border-l-4 mb-4 rounded-r-md ${config.borderColor} ${config.bgColor}`;
+            infoContainer.className = `p-3 md:p-4 border-l-4 mb-2 md:mb-4 rounded-r-lg shadow-sm min-h-[100px] md:min-h-[110px] flex flex-col justify-center ${config.borderColor} ${config.bgColor}`;
             
             const resultHTML = `
-                <div class="flex items-center">
+                <div class="flex items-center h-full">
                     <div class="flex-shrink-0">${config.icon}</div>
-                    <div class="ml-3 flex-grow">
-                        <p class="text-base font-bold ${config.textColor} leading-tight">${config.title}</p>
-                        <p class="text-xs text-gray-800 mt-0.5">
-                            Yaş (30 Eylül ${cutoffYear}): <strong>${result.ageInYears} yıl ${result.ageInMonths % 12} ay</strong>
+                    <div class="ml-3 md:ml-4 flex-grow">
+                        <p class="text-base md:text-xl font-bold ${config.textColor} leading-tight">${config.title}</p>
+                        <p class="text-xs md:text-sm text-gray-800 mt-0.5 md:mt-1">
+                            Yaş (30 Eylül ${cutoffYear}): <span class="font-bold text-gray-900">${result.ageInYears} yıl ${result.ageInMonths % 12} ay</span>
                         </p>
-                        <p class="text-xs text-gray-700 mt-1 leading-snug">${result.message}</p>
+                        <p class="text-xs md:text-sm text-gray-700 mt-0.5 leading-snug">${result.message}</p>
                     </div>
                 </div>
             `;
@@ -194,13 +208,14 @@
 
         function handleCheckEligibility(cutoffYear) {
             errorMessage.textContent = '';
+            errorMessage.style.opacity = '0';
             
             const day = dayInput.value.trim();
             const month = monthSelect.value;
             const year = yearInput.value.trim();
 
             if (!day || !month || !year) {
-                errorMessage.textContent = 'Tüm alanları (Gün, Ay, Yıl) doldurun.';
+                showError('Lütfen Gün, Ay ve Yıl alanlarını doldurun.');
                 return;
             }
 
@@ -209,31 +224,31 @@
             const yearNum = parseInt(year, 10);
 
             if (isNaN(dayNum) || isNaN(yearNum)) {
-                errorMessage.textContent = 'Sadece sayısal değer girin.';
+                showError('Sadece sayısal değer girin.');
                 return;
             }
 
             const currentYear = new Date().getFullYear();
-            if (yearNum < 1950 || yearNum > currentYear + 1) {
-                errorMessage.textContent = `Geçerli bir yıl girin (${1950} - ${currentYear + 1}).`;
+            if (yearNum < 2000 || yearNum > currentYear + 1) {
+                showError(`Geçerli bir yıl girin (2000 - ${currentYear + 1}).`);
                 return;
             }
 
             if (dayNum < 1 || dayNum > 31) {
-                errorMessage.textContent = 'Gün 1-31 arasında olmalıdır.';
+                showError('Gün 1-31 arasında olmalıdır.');
                 return;
             }
 
             const birthDateObj = new Date(yearNum, monthNum - 1, dayNum);
             if (birthDateObj.getFullYear() !== yearNum || birthDateObj.getMonth() !== monthNum - 1 || birthDateObj.getDate() !== dayNum) {
-                errorMessage.textContent = `Geçersiz tarih girdiniz.`;
+                showError(`Geçersiz bir tarih girdiniz.`);
                 return;
             }
             
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (birthDateObj > today) {
-                errorMessage.textContent = 'Gelecek bir tarih girilemez.';
+                showError('Gelecek bir tarih girilemez.');
                 return;
             }
 
@@ -246,16 +261,16 @@
 
             if (ageInYears >= 14) {
                 status = 'ineligible';
-                message = 'İlköğretim yaşı (6-14) aşılmıştır. Açık Öğretim veya Halk Eğitim değerlendirilebilir.';
+                message = 'İlköğretim yaşı (6-14) aşılmıştır.';
             } else if (ageInMonths >= 72) {
                 status = 'compulsory';
                 message = 'Çocuğunuzun ilkokula kaydı zorunludur.';
             } else if (ageInMonths >= 69 && ageInMonths <= 71) {
                 status = 'optional';
-                message = 'Veli dilekçesi ile kayıt 1 yıl ertelenebilir veya anasınıfına yönlendirilebilir.';
+                message = 'Veli dilekçesi ile kayıt 1 yıl ertelenebilir.';
             } else if (ageInMonths >= 66 && ageInMonths <= 68) {
                 status = 'optional';
-                message = 'Veli dilekçesi ile ilkokula 1 yıl erken kayıt yapılabilir.';
+                message = 'Veli dilekçesi ile 1 yıl erken kayıt yapılabilir.';
             } else {
                 status = 'ineligible';
                 message = 'Henüz ilkokul kayıt yaşına gelmemiştir.';
@@ -269,6 +284,11 @@
             };
             
             renderResult(result, cutoffYear);
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorMessage.style.opacity = '1';
         }
 
         // --- Run ---
